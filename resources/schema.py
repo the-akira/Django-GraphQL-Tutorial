@@ -69,18 +69,19 @@ class CreateArtista(graphene.Mutation):
     @staticmethod
     def mutate(root, info, input=None):
         discos = []
-        for disco_input in input.discos:
-            disco = Disco.objects.get(pk=disco_input.id)
-            if disco is None:
-                return CreateArtista(disco=None)
-            discos.append(disco)
+        if input.discos:
+            for disco_input in input.discos:
+                disco = Disco.objects.get(pk=disco_input.id)
+                if disco is None:
+                    return CreateArtista(disco=None)
+                discos.append(disco)
         artista_instance = Artista(
             nome=input.nome,
             origem=input.origem
           )
         artista_instance.save()
         artista_instance.discos.set(discos)
-        return CreateArtista(artista=artista_instance)
+        return CreateArtista(artista=artista_instance)  
 
 class Mutation(graphene.ObjectType):
     create_disco = CreateDisco.Field()
